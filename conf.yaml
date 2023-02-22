@@ -1,0 +1,104 @@
+trial_series: YOUR_OUTPUT_DIR
+
+trial_base: YOUR_OUTPUT_PATH
+
+
+# Configure ray-tune clusters
+ray_conf:
+    init_args:
+        num_cpus: 1
+        num_gpus: 1
+        local_mode: false
+        ignore_reinit_error: true
+        include_dashboard: false
+        _temp_dir: YOUR_OUTPUT_PATH/ray
+
+    trial_stopper: TrialPlateauStopper
+    stopper_args:
+        metric: stop_metric
+        std: 0.001
+        num_results: 10
+        grace_period: 60
+        mode: min
+
+
+# Configure training, validation, and evaluation data
+data_conf:
+    train_data: # training data
+        dataset: YOUR_DATA_PATH/Clotho
+        audio_data: development_audio_logmels.hdf5
+        text_data: development_text.csv
+        text_embeds: sbert_embeds.pkl
+        text_level: sentence
+
+    val_data: # validation data
+        dataset: YOUR_DATA_PATH/Clotho
+        audio_data: validation_audio_logmels.hdf5
+        text_data: validation_text.csv
+        text_embeds: sbert_embeds.pkl
+        text_level: sentence
+
+    eval_data: # evaluation data
+        dataset: YOUR_DATA_PATH/Clotho
+        audio_data: evaluation_audio_logmels.hdf5
+        text_data: evaluation_text.csv
+        text_embeds: sbert_embeds.pkl
+        text_level: sentence
+
+
+# Configure hyper-parameters
+param_conf:
+    num_epoch: 80
+    batch_size: 32
+    model: DualEncoderModel
+    criterion: infonce_loss
+    optimizer: AdamOptimizer
+    lr_scheduler: ReduceLROnPlateau
+
+
+# Model definitions
+DualEncoderModel:
+    name: DualEncoderModel
+    out_norm: L2
+
+    audio_enc:
+        name: CNN14Encoder
+        init: prior
+        weight: YOUR_DATA_PATH/pretrained_models/CNN14_300.pth
+        trainable: true
+        out_dim: 300
+
+    text_enc:
+        name: SentBERTBaseEncoder
+        init: prior
+        out_dim: 300
+
+
+# Criteria
+criteria:
+    infonce_loss:
+        name: LogSoftmaxLoss
+        args:
+            temperature: 0.07
+            dist: dot_product  # dot_product, cosine_similarity
+
+
+# Optimizer definitions
+AdamOptimizer:
+    name: Adam
+    args:
+        lr: 0.001
+        weight_decay: 0.0
+
+
+# Learning rate scheduler definitions
+ReduceLROnPlateau:
+    name: ReduceLROnPlateau
+    args:
+        mode: min
+        factor: 0.1
+        patience: 5
+        threshold: 0.005
+        threshold_mode: abs
+        min_lr: 0.000001
+        verbose: true
