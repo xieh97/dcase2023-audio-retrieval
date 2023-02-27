@@ -2,6 +2,18 @@
 
 This repository provides the baseline system for **Language-based Audio Retrieval** (Task 6B) in DCASE 2023 Challenge.
 
+![Language-based Audio Retrieval](figs/dcase2023_task_6b.png)
+
+# Baseline Retrieval System
+
+![Baseline Retrieval System](figs/baseline_system.png)
+
+```
+- Audio Encoder                   # fine-tuned PANNs, i.e., CNN14
+- Text Encoder                    # pretrained Sentence-BERT, i.e., all-mpnet-base-v2
+- Contrastive Learning Objective  # InfoNCE loss
+```
+
 # Quick Start
 
 This codebase is developed with Python 3.9 and [PyTorch 1.13.0](https://pytorch.org/).
