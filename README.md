@@ -74,3 +74,14 @@ postprocessing
 ├─ xmodal_scores.py             # calculate audio-text scores
 └─ xmodal_retrieval.py          # calculate mAP, R@1, R@5, R@10, etc.
 ```
+
+# Examples
+
+1. Code example for using the pretrained audio encoder:
+
+```
+example
+├─ audio_encoder.py             # code example for audio encoder
+├─ example.wav                  # audio segment example
+└─ audio_encoder.pth            # audio encoder checkpoint
+```
